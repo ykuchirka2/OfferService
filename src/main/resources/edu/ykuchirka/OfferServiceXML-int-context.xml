@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+    <int:transformer
+            input-channel="channelFtp"
+            output-channel="channelNotFilteredOffers"
+            ref="csvReader"/>
+
+    <int:channel id="channelNotFilteredOffers"/>
+
+    <int:transformer
+            input-channel="channelNotFilteredOffers"
+            output-channel="channelFilteredOffers"
+            ref="offerFilter"/>
+
+    <int:channel id="channelFilteredOffers">
+        <int:queue/>
+    </int:channel>
+<!--
+    <int:splitter
+            input-channel="channelFilteredOffers"
+            output-channel="channelSplitedOffers" />
+
+    <int:channel id="channelSplitedOffers">
+        <int:queue/>
+    </int:channel>
+-->
+    <int:logging-channel-adapter id="logger" level="INFO"/>
+
+    <!-- Application beans -->
+    <bean id="csvReader" class="edu.ykuchirka.Integration.CsvOfferReader"/>
+    <bean id="offerFilter" class="edu.ykuchirka.Integration.OfferListFilter"/>
+
+</beans>
+
